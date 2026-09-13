@@ -22,3 +22,10 @@ public class Enemy extends Player{
         return this.getHp();
     }
 }
+
+// TODO (teammate): Finish Enemy. It must extend Player, have Enemy() and
+// Enemy(int depth, boolean boss), set a name plus random hp/atk/def (boss
+// should be stronger and stats should scale with depth), and provide
+// getName(), attack(Player, int), and takeDamage(int). EncounterRoom already
+// calls new Enemy(depth, boss), e.getName(), e.attack(...), and e.takeDamage(...).
+// noted by Sophy
