@@ -98,5 +98,13 @@ public class EncounterRoom extends Room {
         }
         return true;
     }
+
+}
+
+
+
+
+
+    
 }
 
