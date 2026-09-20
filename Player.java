@@ -32,6 +32,10 @@ public class Player {
     public double getDef() {
         return def;
     }
+    
+    public boolean isAlive() {
+        return this.hp>0;
+    }
 
 
     // setters
