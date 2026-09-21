@@ -1,0 +1,124 @@
+package dungeonCrawler;
+ 
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+ 
+// -------------------------------------------------------------------------
+/**
+ * Testing
+ *
+ * @author Will Burnham
+ * @version Sep 21, 2026
+ */
+public class RoomFactoryTest {
+ 
+    // ----------------------------------------------------------
+    /**
+     * Normal case: makeRoom gives back an actual room.
+     */
+    @Test
+    public void testMakeRoomNotNull() {
+        Room room = RoomFactory.makeRoom(1);
+ 
+        assertNotNull(room);
+    }
+ 
+ 
+    // ----------------------------------------------------------
+    /**
+     * Normal case: the room is set to the depth we asked for.
+     */
+    @Test
+    public void testMakeRoomDepth() {
+        Room room = RoomFactory.makeRoom(5);
+ 
+        assertEquals(5, room.getDepth());
+    }
+ 
+ 
+    // ----------------------------------------------------------
+    /**
+     * Normal case: every room is either an encounter room or an upgrade
+     * room. We make 50 rooms to check this many times.
+     */
+    @Test
+    public void testMakeRoomType() {
+        for (int i = 0; i < 50; i++) {
+            Room room = RoomFactory.makeRoom(3);
+            String type = room.getRoomType();
+ 
+            boolean validType = type.equals("Encounter Room")
+                || type.equals("Upgrade Room");
+            assertTrue(validType);
+        }
+    }
+ 
+ 
+    // ----------------------------------------------------------
+    /**
+     * Normal case: over 100 rooms, both kinds should show up at least
+     * once. (With a 70/30 split, missing one kind 100 times in a row is
+     * so unlikely that it basically never happens.)
+     */
+    @Test
+    public void testBothRoomTypesAppear() {
+        int encounters = 0;
+        int upgrades = 0;
+ 
+        for (int i = 0; i < 100; i++) {
+            Room room = RoomFactory.makeRoom(3);
+            if (room.getRoomType().equals("Encounter Room")) {
+                encounters++;
+            }
+            else {
+                upgrades++;
+            }
+        }
+ 
+        assertTrue(encounters > 0);
+        assertTrue(upgrades > 0);
+    }
+ 
+ 
+    // ----------------------------------------------------------
+    /**
+     * Normal case: every 10th level is a boss level, so it should always
+     * be an encounter room.
+     */
+    @Test
+    public void testBossLevelIsAlwaysEncounter() {
+        for (int i = 0; i < 20; i++) {
+            Room room10 = RoomFactory.makeRoom(10);
+            Room room20 = RoomFactory.makeRoom(20);
+ 
+            assertEquals("Encounter Room", room10.getRoomType());
+            assertEquals("Encounter Room", room20.getRoomType());
+        }
+    }
+ 
+ 
+    // ----------------------------------------------------------
+    /**
+     * Bad input: a negative depth should be changed to 0.
+     */
+    @Test
+    public void testMakeRoomNegativeDepth() {
+        Room room = RoomFactory.makeRoom(-5);
+ 
+        assertNotNull(room);
+        assertEquals(0, room.getDepth());
+    }
+ 
+ 
+    // ----------------------------------------------------------
+    /**
+     * Edge case: depth 0 still makes a room at depth 0.
+     */
+    @Test
+    public void testMakeRoomDepthZero() {
+        Room room = RoomFactory.makeRoom(0);
+ 
+        assertNotNull(room);
+        assertEquals(0, room.getDepth());
+    }
+}
