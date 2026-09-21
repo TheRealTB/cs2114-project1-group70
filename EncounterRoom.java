@@ -68,7 +68,7 @@ public class EncounterRoom extends Room {
                 String cmd = in.nextLine().trim().toLowerCase();
 
                 if (cmd.equals("heal")) {
-                    if (player.usePotion()) {
+                    if (player.useHealPotion()) {
                         System.out.println("Healed. HP " + player.getHp());
                     }
                     else {
