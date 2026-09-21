@@ -24,6 +24,10 @@ public class Player {
     public int getHp() {
         return hp;
     }
+    
+    public int getMaxHp() {
+        return maxHp;
+    }
 
 
     public int getAtk() {
