@@ -1,327 +1,122 @@
 package dungeonCrawler;
- 
+
 import java.util.Scanner;
- 
-// -------------------------------------------------------------------------
-/**
- * Runs the randomized dungeon crawler (the "GameEngine" class in the spec).
- *
- * @author Will Burnham
- * @version Sep 21, 2026
- */
-public class GameRunner {
+
+public class EncounterRoom extends Room {
     // ~ Fields ................................................................
-    private static int depth;
-    private static Player player;
-    private static Scanner in = new Scanner(System.in);
- 
-    // ~Public Methods ........................................................
-    // ----------------------------------------------------------
-    /**
-     * Starts the program.
-     *
-     * @param args dw bout it
-     */
-    public static void main(String[] args) {
-        startGame();
-    }
- 
-    // ----------------------------------------------------------
-    /**
-     * Runs the tutorial then the dungeon loop then the game-over screen.
-     */
-    public static void startGame() {
-        player = new Player(100, 3, .9);
-        depth = 0;
- 
-        System.out.println("=== Welcome to the Dungeon ===");
-        String[] yesNo = { "yes", "no" };
-        String answer = askChoice(
-            "Would you like to play the tutorial? (yes / no)", yesNo);
-        if (answer.equals("yes")) {
-            runTutorial();
-        }
-        else {
-            System.out.println("Skipping the tutorial.");
-        }
- 
-        runDungeonLoop();
-        endGame(depth);
-    }
- 
- 
-    // ----------------------------------------------------------
-    /**
-     * Tutorial
-     */
-    public static void runTutorial() {
-        System.out.println();
-        System.out.println("=== Tutorial ===");
-        System.out.println("You fight your way down the dungeon one room "
-            + "at a time. The deeper you get, the higher your score.");
-        System.out.println("Every command is a word you type. Capital "
-            + "letters and extra spaces are fine.");
- 
-        // a practice player and monster, so the real run is not affected
-        Player trainee = new Player(100, 3, .9);
-        Enemy dummy = new Enemy(0, false);
-        dummy.changeMaxHp(100);
-        dummy.changeHp(100);
-        String dummyName = "practice " + dummy.getName();
-        System.out.println("A " + dummyName + " appears. It won't hurt "
-            + "much, so let's try every command.");
- 
-        System.out.println();
-        System.out.println("ATTACK hits the enemy for your full damage.");
-        waitForCommand("attack");
-        int dmg = playerDamage(trainee, dummy, "attack");
-        dummy.takeDamage(dmg);
-        System.out.println("You deal " + dmg + ". The " + dummyName
-            + " has " + dummy.getHp() + " HP left.");
- 
-        // heal
-        int hit = (int)(dummy.getAtk() * trainee.getDef());
-        dummy.attack(trainee, hit);
-        System.out.println("After your move, the enemy hits back. The "
-            + dummyName + " hits you for " + hit + ". Your HP: "
-            + trainee.getHp() + "/" + trainee.getMaxHp());
- 
-        // parry
-        System.out.println();
-        System.out.println("PARRY is a careful counter: half damage plus 2.");
-        waitForCommand("parry");
-        dmg = playerDamage(trainee, dummy, "parry");
-        dummy.takeDamage(dmg);
-        System.out.println("You deal " + dmg + ".");
- 
-        // dodge
-        System.out.println();
-        System.out.println("DODGE is a quick jab while moving: half damage.");
-        waitForCommand("dodge");
-        dmg = playerDamage(trainee, dummy, "dodge");
-        dummy.takeDamage(dmg);
-        System.out.println("You deal " + dmg + ".");
- 
-        // heal
-        System.out.println();
-        System.out.println("HEAL drinks a potion for 10 HP. You get one "
-            + "potion for each room you clear. Here is one to try.");
-        trainee.addHealPotions(1);
-        waitForCommand("heal");
-        trainee.useHealPotion();
-        System.out.println("Healed. Your HP: " + trainee.getHp() + "/"
-            + trainee.getMaxHp());
- 
-        // print
-        System.out.println();
-        System.out.println("Between rooms you pick an exit left, forward, "
-            + "or right. Each room takes you one level deeper.");
-        System.out.println("Some rooms are fights, and every 10th level has "
-            + "a boss. Upgrade rooms let you choose more health, attack, "
-            + "or defense.");
-        System.out.println("Your HP is restored after every room you clear. "
-            + "Your score is the deepest level you reach.");
-        System.out.println("=== Tutorial complete! ===");
-    }
- 
- 
-    // ----------------------------------------------------------
-    /**
-     * Enters a room, and moves deeper until the player dies or chooses to quit.
-     */
-    public static void runDungeonLoop() {
-        depth = 1;
-        Room current = RoomFactory.makeRoom(depth);
-        boolean playing = true;
- 
-        while (playing && player.isAlive()) {
-            System.out.println();
-            System.out.println("--- Depth " + depth + " ---");
- 
-            boolean survived = current.enter(player, in);
- 
-            if (!survived || !player.isAlive()) {
-                playing = false;
-            }
-            else {
-                // health resets to max after each room
-                player.changeHp(player.getMaxHp());
-                System.out.println("You catch your breath. HP restored.");
-                System.out.println(statsText());
- 
-                // a list of the exits can be open in said room 
-                String exits = "";
-                if (current.hasExit("left")) {
-                    exits += "left / ";
-                }
-                if (current.hasExit("forward")) {
-                    exits += "forward / ";
-                }
-                if (current.hasExit("right")) {
-                    exits += "right / ";
-                }
-                exits += "quit";
- 
-                // keep asking until the player picks an open exit or quits
-                String dir = "";
-                boolean validChoice = false;
-                while (!validChoice) {
-                    System.out.println("Which way? (" + exits + ")");
-                    dir = in.nextLine().trim().toLowerCase();
-                    if (dir.equals("quit") || current.hasExit(dir)) {
-                        validChoice = true;
-                    }
-                    else {
-                        System.out.println("\"" + dir
-                            + "\" is not an open exit. Please try again.");
-                    }
-                }
- 
-                if (dir.equals("quit")) {
-                    playing = false;
-                }
-                else {
-                    Room next = current.go(dir, depth + 1);
-                    if (next != null) {
-                        depth++;
-                        current = next;
-                    }
-                }
-            }
-        }
-    }
- 
- 
-    // ----------------------------------------------------------
-    /**
-     * Prints the final stats and the depth reached as the player's score.
-     *
-     * @param depthReached the deepest level the player reached
-     * @ return true
-     */
-    public static boolean endGame(int depthReached) {
-        if (depthReached < 0) {
-            System.out.println("Error: invalid depth (" + depthReached
-                + "). Cannot show results.");
-            return false;
-        }
- 
-        System.out.println();
-        System.out.println("=== Game Over ===");
-        if (player != null) {
-            if (player.isAlive()) {
-                System.out.println("You escaped the dungeon alive!");
-            }
-            else {
-                System.out.println("You were defeated.");
-            }
-            System.out.println(statsText());
-        }
-        System.out.println("Deepest level reached: " + depthReached);
-        System.out.println("Final score: " + depthReached);
-        return true;
+    private int numEnemies;
+    private Enemy[] enemies;
+
+    // ~ Constructors ..........................................................
+    public EncounterRoom() {
+        this(0, false);
     }
 
- 
-    public static void setScanner(Scanner scanner) {
-        in = scanner;
+    public EncounterRoom(int depth, boolean boss) {
+        this(makeEnemies(depth, boss));
+        setDepth(depth);
     }
-  
-    public static void setPlayer(Player newPlayer) {
-        player = newPlayer;
-    }
- 
-    public static Player getPlayer() {
-        return player;
-    }
- 
-    public static int getDepth() {
-        return depth;
-    }
- 
-     /**
-     * Helper method
-     *
-     * @param prompt the question to print
-     * @param options the allowed answers 
-     * @return the answer the player typed
-     */
-    private static String askChoice(String prompt, String[] options) {
-        String answer = "";
-        boolean valid = false;
-        while (!valid) {
-            System.out.println(prompt);
-            answer = in.nextLine().trim().toLowerCase();
-            for (int i = 0; i < options.length; i++) {
-                if (answer.equals(options[i])) {
-                    valid = true;
-                }
-            }
-            if (!valid) {
-                System.out.println("\"" + answer
-                    + "\" is not an option. Please try again.");
-            }
+
+    public EncounterRoom(Enemy[] pack) {
+        super();
+        if (pack == null || pack.length == 0) {
+            pack = makeEnemies(0, false);
         }
-        return answer;
+        this.enemies = pack;
+        this.numEnemies = pack.length;
     }
- 
-    /**
-     * Helper method used by tutorial. Keeps asking until the player types the one
-     * command this step is teaching, and explains the options if they
-     * type something else.
-     *
-     * @param command the command to wait for
-     */
-    public static void waitForCommand(String command) {
-        String typed = "";
-        while (!typed.equals(command)) {
-            System.out.println("Type \"" + command + "\":");
-            typed = in.nextLine().trim().toLowerCase();
-            if (!typed.equals(command)) {
-                System.out.println("The fight commands are: attack, parry, "
-                    + "dodge, heal.");
-                System.out.println("For this step, please type \"" + command
-                    + "\".");
-            }
-        }
+
+    public static EncounterRoom generate(int depth) {
+        boolean boss = depth > 0 && depth % 10 == 0;
+        EncounterRoom room = new EncounterRoom(depth, boss);
+        room.setDepth(depth);
+        return room;
     }
- 
-     /**
-     * Works out how much damage the player deals. Uses the same math as
-     * EncounterRoom so the tutorial matches the real game.
-     *
-     * @param p player attacking
-     * @param e enemy being hit
-     * @param cmd attack parry or dodge
-     * @return the damage dealt
-     */
-    public static int playerDamage(Player p, Enemy e, String cmd) {
-        int dmg = (int)(p.getAtk() * e.getDef());
-        if (cmd.equals("parry")) {
-            dmg = (int)(p.getAtk() * e.getDef() / 2) + 2;
+
+    private static Enemy[] makeEnemies(int depth, boolean boss) {
+        int n = boss ? 1: (int)(Math.random() * 3) + 3;
+        Enemy[] pack = new Enemy[n];
+        for (int i = 0; i < n; i++) {
+            pack[i] = new Enemy(depth, boss);
         }
-        if (cmd.equals("dodge")) {
-            dmg = (int)(p.getAtk() * e.getDef() / 2);
-        }
-        if (dmg < 1) {
-            dmg = 1;
-        }
-        return dmg;
+        return pack;
     }
     
-    /**
-     * One line summary of players stats to add a little bit of sauciness
-     *
-     * @return concatanatanated stats text
-     */
-    public static String statsText() {
-        if (player == null) {
-            return "No player.";
+
+    // ~Public Methods ........................................................
+    public String getRoomType() {
+        return "Encounter Room";
+    }
+
+
+    public boolean enter(Player player, Scanner in) {
+        if (isCleared()) {
+            System.out.println("This room is already cleared.");
+            return true;
         }
-        int blocked = (int)Math.round((1 - player.getDef()) * 100);
-        return "HP: " + player.getHp() + "/" + player.getMaxHp()
-            + " | Attack: " + player.getAtk() + " | Defense: blocks "
-            + blocked + "% of damage";
+        System.out.println(look());
+
+        for (int i = 0; i < numEnemies && player.isAlive(); i++) {
+            Enemy e = enemies[i];
+            if (e == null || !e.isAlive()) {
+                continue;
+            }
+            System.out.println("Fighting!" + e.getName() + "HP" + e.getHp());
+            while (player.isAlive() && e.isAlive()) {
+                System.out.println("attack / parry / dodge / heal");
+                String cmd = in.nextLine().trim().toLowerCase();
+
+                if (cmd.equals("heal")) {
+                    player.useHealPotion();
+                }
+                else if (cmd.equals("attack") || cmd.equals("parry") || cmd
+                    .equals("dodge")) {
+                    int dmg = (int)(player.getAtk() * e.getDef());
+                    if (cmd.equals("parry")) {
+                        dmg = (int)(player.getAtk() * e.getDef() / 2) + 2;
+                    }
+                    if (cmd.equals("dodge")) {
+                        dmg = (int)(player.getAtk() * e.getDef() / 2);
+                    }
+                    if (dmg < 1) {
+                        dmg = 1;
+                    }
+                    e.takeDamage(-dmg);
+                    System.out.println("You deal " + dmg);
+                }
+                else {
+                    System.out.println("Invalid command.");
+                    continue;
+                }
+
+                if (e.isAlive() && player.isAlive()) {
+                    e.attack(player, (int)(e.getAtk() * player.getDef()));
+                    System.out.println(e.getName() + " hits you for " + (int)(e
+                        .getAtk() * player.getDef()));
+                }
+            }
+        }
+
+        if (!player.isAlive()) {
+            System.out.println("You died.");
+            return false;
+        }
+
+        setCleared(true);
+        player.addHealPotions(1);
+        System.out.println(
+            "Cleared. +1 potion. Upgrade: hp / atk / def / skip");
+        String u = in.nextLine().trim().toLowerCase();
+        if (u.equals("hp")) {
+            player.changeMaxHp(2);
+            player.changeHp(2);
+        }
+        else if (u.equals("atk")) {
+            player.changeAtk(1);
+        }
+        else if (u.equals("def")) {
+            player.changeDef(-0.01);
+        }
+        return true;
     }
 }
- 
