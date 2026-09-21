@@ -25,7 +25,7 @@ public class EncounterRoom extends Room {
         this.enemies = pack;
         this.numEnemies = pack.length;
     }
-
+    //makes a boss room every 10 rooms, normal enemy rooms are other rooms, upgrade rooms should be the 3rd and 8th room every 10.
     public static EncounterRoom generate(int depth) {
         boolean boss = depth > 0 && depth % 10 == 0;
         EncounterRoom room = new EncounterRoom(depth, boss);
