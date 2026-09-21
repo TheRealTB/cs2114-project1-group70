@@ -1,5 +1,3 @@
-Text-based dungeon crawler :P
-
-Scoping Doc: https://docs.google.com/document/d/1FbzoOFtigqey96VnEQiqmfOPdwTFFvTEMIcfYcA_l5I/edit?usp=sharing
-
-Spec Doc: https://docs.google.com/document/d/10mwNykMssU2njJG85EqB0oO6njh-Fx5E3KExbYd88Mk/edit?usp=sharing
+Compile/Run Instructions:
+Import all classes into eclipse or IDE of choice. Select run.
+Type in console for inputs, read console output and input should match input choices printed to console. 
