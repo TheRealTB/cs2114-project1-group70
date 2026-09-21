@@ -1,3 +1,1 @@
-// Scanner and sanitization
-// "Reads raw console input and guarantees the caller only ever receives a value from an allowed set. Does not know what the input means in-game."
-
+// This class was deprecated as its functions were managed by other classes.
