@@ -61,7 +61,8 @@ public class EncounterRoom extends Room {
             if (e == null || !e.isAlive()) {
                 continue;
             }
-            System.out.println("Fighting!" + e.getName() + "HP" + e.getHp());
+            System.out.println("Fighting! " + e.getName() + "  (HP " + e
+                .getHp() + ")");
             while (player.isAlive() && e.isAlive()) {
                 System.out.println(player.status());
                 System.out.println("attack / parry / dodge / heal");
@@ -96,9 +97,15 @@ public class EncounterRoom extends Room {
                 }
 
                 if (e.isAlive() && player.isAlive()) {
-                    e.attack(player, (int)(e.getAtk() * player.getDef()));
-                    System.out.println(e.getName() + " hits you for " + (int)(e
-                        .getAtk() * player.getDef()));
+                    int incoming = (int)(e.getAtk() * player.getDef());
+                    if (incoming < 1) {
+                        incoming = 1;
+                    }
+                    // changeHp() treats a positive change as healing, so
+                    // damage has to be passed in as a negative number.
+                    e.attack(player, -incoming);
+                    System.out.println(e.getName() + " hits you for "
+                        + incoming);
                 }
             }
         }
@@ -122,6 +129,10 @@ public class EncounterRoom extends Room {
         }
         else if (u.equals("def")) {
             player.changeDef(-0.01);
+        }
+        else if (!u.equals("skip")) {
+            System.out.println("'" + u
+                + "' is not an upgrade option - skipping.");
         }
         return true;
     }

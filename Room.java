@@ -75,19 +75,19 @@ public abstract class Room {
         dir = cleanDir(dir);
         if (dir.equals("left") && leftOpen) {
             if (nextLeft == null) {
-                nextLeft = RoomFactory.makeRoom(nextDepth);
+                nextLeft = DungeonGenerator.makeRoom(nextDepth);
             }
             return nextLeft;
         }
         if (dir.equals("forward") && forwardOpen) {
             if (nextForward == null) {
-                nextForward = RoomFactory.makeRoom(nextDepth);
+                nextForward = DungeonGenerator.makeRoom(nextDepth);
             }
             return nextForward;
         }
         if (dir.equals("right") && rightOpen) {
             if (nextRight == null) {
-                nextRight = RoomFactory.makeRoom(nextDepth);
+                nextRight = DungeonGenerator.makeRoom(nextDepth);
             }
             return nextRight;
         }

@@ -104,10 +104,37 @@ public class Player {
         return healPotions;
     }
     
-    public void useHealPotion() {
-        if(healPotions>0) {
+    public int getHealPotions() {
+        return healPotions;
+    }
+
+
+    /**
+     * Uses one heal potion. Returns true if a potion was actually spent and
+     * false if there were none left, which is how EncounterRoom knows whether
+     * to print "No potions."
+     */
+    public boolean usePotion() {
+        if (healPotions > 0) {
             healPotions--;
             this.changeHp(10);
+            return true;
         }
+        return false;
+    }
+
+
+    public void useHealPotion() {
+        usePotion();
+    }
+
+
+    /**
+     * One-line readout of the player's current stats, printed each combat
+     * turn by EncounterRoom.
+     */
+    public String status() {
+        return "HP " + hp + "/" + maxHp + "   ATK " + atk + "   DEF "
+            + String.format("%.2f", def) + "   Potions " + healPotions;
     }
 }
