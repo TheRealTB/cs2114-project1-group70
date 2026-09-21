@@ -117,14 +117,14 @@ public class EncounterRoom extends Room {
             "Cleared. +1 potion. Upgrade: hp / atk / def / skip");
         String u = in.nextLine().trim().toLowerCase();
         if (u.equals("hp")) {
-            player.changeMaxHp(4);
-            player.changeHp(4);
+            player.changeMaxHp(2);
+            player.changeHp(2);
         }
         else if (u.equals("atk")) {
-            player.changeAtk(2);
+            player.changeAtk(1);
         }
         else if (u.equals("def")) {
-            player.changeDef(2);
+            player.changeDef(-0.01);
         }
         return true;
     }
