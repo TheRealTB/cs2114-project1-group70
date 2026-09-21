@@ -12,23 +12,39 @@ public class EncounterRoom extends Room {
         this(0, false);
     }
 
-
     public EncounterRoom(int depth, boolean boss) {
-        super();
+        this(makeEnemies(depth, boss));
         setDepth(depth);
-        if (boss) {
-            numEnemies = 1;
-        }
-        else {
-            numEnemies = (int)(Math.random() * 3) + 3; // randomly fill room
-                                                       // with 3-5 enemies
-        }
-        enemies = new Enemy[numEnemies];
-        for (int i = 0; i < numEnemies; i++) {
-            enemies[i] = new Enemy(depth, boss);
-        }
     }
 
+    public EncounterRoom(Enemy[] pack) {
+        super();
+        if (pack == null || pack.length == 0) {
+            pack = makeEnemies(0, false);
+        }
+        this.enemies = pack;
+        this.numEnemies = pack.length;
+    }
+
+    public static EncounterRoom generate(int depth) {
+        boolean boss = depth > 0 && depth % 5 == 0;
+        EncounterRoom room = new EncounterRoom(depth, boss);
+        room.setDepth(depth);
+        return room;
+    }
+
+    private static Enemy[] makeEnemies(int depth, boolean boss) {
+        if (depth < 0) {
+            depth = 0;
+        }
+        int n = boss ? 1: (int)(Math.random() * 3) + 3;
+        Enemy[] pack = new Enemy[n];
+        for (int i = 0; i < n; i++) {
+            pack[i] = new Enemy(depth, boss);
+        }
+        return pack;
+    ]
+    
 
     // ~Public Methods ........................................................
     public String getRoomType() {
