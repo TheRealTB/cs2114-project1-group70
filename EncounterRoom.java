@@ -2,79 +2,127 @@ package dungeonCrawler;
 
 import java.util.Scanner;
 
-public class UpgradeRoom extends Room {
-    private int healUp;
-    private double defUp;
-    private int atkUp;
+public class EncounterRoom extends Room {
+    // ~ Fields ................................................................
+    private int numEnemies;
+    private Enemy[] enemies;
 
     // ~ Constructors ..........................................................
-    public UpgradeRoom() {
-        this(0);
+    public EncounterRoom() {
+        this(0, false);
     }
 
-
-    public UpgradeRoom(Player player, int depth) {
-        super();
+    public EncounterRoom(int depth, boolean boss) {
+        this(makeEnemies(depth, boss));
         setDepth(depth);
-        double rarity = Math.random();
-        double healRoll = Math.random();
-        if (healRoll > .9) {
-            healUp = (int)(player.getMaxHp()*.15);
-        }
-        else if (healRoll > rarity) {
-            healUp = (int)(player.getMaxHp()*.1);
-        }
-        else {
-            healUp = (int)(player.getMaxHp()*.05);
-        }
-
-        double atkRoll = Math.random();
-        if (atkRoll > .9) {
-            atkUp = (int)(player.getAtk()*.3);
-        }
-        else if (atkRoll > rarity) {
-            atkUp = (int)(player.getAtk()*.2);
-        }
-        else {
-            atkUp = (int)(player.getAtk()*.1);
-        }
-
-        double defRoll = Math.random();
-        if (defRoll > .9) {
-            defUp = .85;
-        }
-        else if (defRoll > rarity) {
-            defUp = .9;
-        }
-        else {
-            defUp = .95;
-        }
-
     }
 
+    public EncounterRoom(Enemy[] pack) {
+        super();
+        if (pack == null || pack.length == 0) {
+            pack = makeEnemies(0, false);
+        }
+        this.enemies = pack;
+        this.numEnemies = pack.length;
+    }
+
+    public static EncounterRoom generate(int depth) {
+        boolean boss = depth > 0 && depth % 10 == 0;
+        EncounterRoom room = new EncounterRoom(depth, boss);
+        room.setDepth(depth);
+        return room;
+    }
+
+    private static Enemy[] makeEnemies(int depth, boolean boss) {
+        int n = boss ? 1: (int)(Math.random() * 3) + 3;
+        Enemy[] pack = new Enemy[n];
+        for (int i = 0; i < n; i++) {
+            pack[i] = new Enemy(depth, boss);
+        }
+        return pack;
+    }
+    
 
     // ~Public Methods ........................................................
     public String getRoomType() {
-        return "Upgrade Room";
+        return "Encounter Room";
     }
 
 
     public boolean enter(Player player, Scanner in) {
-        // plyaer enters and gets to choose between hp, def, or atk increase.
-        boolean clear = false;
-        System.out.println("You are offered a choice:");
-        System.out.println("Health / Attack / Defense");
-        String cmd = in.nextLine().trim().toLowerCase();
-        
-        if(cmd.equals("Health")) {
-            player.changeMaxHp(healUp);
-            player.changeHp(healUp);
-        }else if(cmd.equals("Attack")) {
-            player.changeAtk(atkUp);
-        }else if(cmd.equals("Defense")) {
-            player.changeDef(defUp);
+        if (isCleared()) {
+            System.out.println("This room is already cleared.");
+            return true;
         }
-        clear = true;
-        return clear;
+        System.out.println(look());
+
+        for (int i = 0; i < numEnemies && player.isAlive(); i++) {
+            Enemy e = enemies[i];
+            if (e == null || !e.isAlive()) {
+                continue;
+            }
+            System.out.println("Fighting!" + e.getName() + "HP" + e.getHp());
+            while (player.isAlive() && e.isAlive()) {
+                System.out.println(player.status());
+                System.out.println("attack / parry / dodge / heal");
+                String cmd = in.nextLine().trim().toLowerCase();
+
+                if (cmd.equals("heal")) {
+                    if (player.usePotion()) {
+                        System.out.println("Healed. HP " + player.getHp());
+                    }
+                    else {
+                        System.out.println("No potions.");
+                    }
+                }
+                else if (cmd.equals("attack") || cmd.equals("parry") || cmd
+                    .equals("dodge")) {
+                    int dmg = (int)(player.getAtk() * e.getDef());
+                    if (cmd.equals("parry")) {
+                        dmg = (int)(player.getAtk() * e.getDef() / 2) + 2;
+                    }
+                    if (cmd.equals("dodge")) {
+                        dmg = (int)(player.getAtk() * e.getDef() / 2);
+                    }
+                    if (dmg < 1) {
+                        dmg = 1;
+                    }
+                    e.takeDamage(-dmg);
+                    System.out.println("You deal " + dmg);
+                }
+                else {
+                    System.out.println("Invalid command.");
+                    continue;
+                }
+
+                if (e.isAlive() && player.isAlive()) {
+                    e.attack(player, (int)(e.getAtk() * player.getDef()));
+                    System.out.println(e.getName() + " hits you for " + (int)(e
+                        .getAtk() * player.getDef()));
+                }
+            }
+        }
+
+        if (!player.isAlive()) {
+            System.out.println("You died.");
+            return false;
+        }
+
+        setCleared(true);
+        player.addHealPotions(1);
+        System.out.println(
+            "Cleared. +1 potion. Upgrade: hp / atk / def / skip");
+        String u = in.nextLine().trim().toLowerCase();
+        if (u.equals("hp")) {
+            player.changeMaxHp(2);
+            player.changeHp(2);
+        }
+        else if (u.equals("atk")) {
+            player.changeAtk(1);
+        }
+        else if (u.equals("def")) {
+            player.changeDef(-0.01);
+        }
+        return true;
     }
 }
