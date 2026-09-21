@@ -1,3 +1,4 @@
+
 package dungeonCrawler;
  
 import static org.junit.jupiter.api.Assertions.*;
@@ -5,9 +6,13 @@ import org.junit.jupiter.api.Test;
  
 // -------------------------------------------------------------------------
 /**
- * Testing
+ * Tests for RoomFactory.
  *
- * @author Will Burnham
+ * Rooms are picked at random, so some tests make many rooms in a loop.
+ * That way we can check things that should be true every time, or check
+ * that both kinds of room show up at least once.
+ *
+ * @author Tyler
  * @version Sep 21, 2026
  */
 public class RoomFactoryTest {
