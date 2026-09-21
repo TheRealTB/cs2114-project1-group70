@@ -6,6 +6,7 @@ public class Player {
     private int hp;
     private int atk;
     private double def;
+    private int healPotions;
     // etc...
 
     // ~ Constructors ..........................................................
@@ -14,6 +15,7 @@ public class Player {
         this.hp = maxHp;
         this.atk = atk;
         this.def = def;
+        this.healPotions = 0;
     }
     // ~Public Methods ........................................................
 
@@ -32,9 +34,10 @@ public class Player {
     public double getDef() {
         return def;
     }
-    
+
+
     public boolean isAlive() {
-        return this.hp>0;
+        return this.hp > 0;
     }
 
 
@@ -86,5 +89,21 @@ public class Player {
             def += change;
         }
         return def;
+    }
+    
+    public int addHealPotions(int c) {
+        if(c+healPotions>10) {
+            healPotions = 10;
+        }else {
+            healPotions+=c;
+        }
+        return healPotions;
+    }
+    
+    public void useHealPotion() {
+        if(healPotions>0) {
+            healPotions--;
+            this.changeHp(10);
+        }
     }
 }
