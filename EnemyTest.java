@@ -11,6 +11,7 @@ import org.junit.Test;
  *
  *  @author Asher
  *  @version Sep 21, 2026
+ *  Written with assistance from Anthropic Sonnet 5
  */
 public class EnemyTest {
 
