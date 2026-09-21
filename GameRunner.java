@@ -15,11 +15,7 @@ public class GameRunner {
     //~Public  Methods ........................................................
     public static void startGame() {
         Player player = new Player(100, 3, .9);
-        GameRunner.runTutorial();
         GameRunner.runDungeonLoop();
-    }
-    public static void runTutorial() {
-        //tutorial
     }
     public static void runDungeonLoop() {
         //make rooms and stuff
