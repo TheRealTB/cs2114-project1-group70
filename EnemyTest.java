@@ -9,7 +9,8 @@ import org.junit.Test;
  *  Math.random() for its stats, so these tests check invariants (valid
  *  ranges, no crashes, correct clamping) rather than exact random values.
  *
- *  @author asher
+ *  @author Asher
+ *  @version Sep 21, 2026
  */
 public class EnemyTest {
 
