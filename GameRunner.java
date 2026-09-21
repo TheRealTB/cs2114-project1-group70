@@ -197,12 +197,13 @@ public class GameRunner {
      * Prints the final stats and the depth reached as the player's score.
      *
      * @param depthReached the deepest level the player reached
+     * @ return true
      */
-    public static void endGame(int depthReached) {
+    public static boolean endGame(int depthReached) {
         if (depthReached < 0) {
             System.out.println("Error: invalid depth (" + depthReached
                 + "). Cannot show results.");
-            return;
+            return false;
         }
  
         System.out.println();
@@ -218,6 +219,24 @@ public class GameRunner {
         }
         System.out.println("Deepest level reached: " + depthReached);
         System.out.println("Final score: " + depthReached);
+        return true;
+    }
+
+ 
+    public static void setScanner(Scanner scanner) {
+        in = scanner;
+    }
+  
+    public static void setPlayer(Player newPlayer) {
+        player = newPlayer;
+    }
+ 
+    public static Player getPlayer() {
+        return player;
+    }
+ 
+    public static int getDepth() {
+        return depth;
     }
  
      /**
@@ -295,7 +314,10 @@ public class GameRunner {
      *
      * @return concatanatanated stats text
      */
-    private static String statsText() {
+    public static String statsText() {
+        if (player == null) {
+            return "No player.";
+        }
         int blocked = (int)Math.round((1 - player.getDef()) * 100);
         return "HP: " + player.getHp() + "/" + player.getMaxHp()
             + " | Attack: " + player.getAtk() + " | Defense: blocks "
