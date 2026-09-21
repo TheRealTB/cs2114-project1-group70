@@ -10,7 +10,8 @@ import org.junit.Before;
  *  is one normal-case test and one bad-input / boundary-case test to make
  *  sure Player never crashes and never leaves its stats out of range.
  *
- *  @author group70
+ *  @author Asher
+ *  @version Sep 21, 2026
  */
 public class PlayerTest {
     private Player player;
