@@ -63,7 +63,7 @@ public class EncounterRoom extends Room {
             }
             System.out.println("Fighting!" + e.getName() + "HP" + e.getHp());
             while (player.isAlive() && e.isAlive()) {
-                System.out.println(player.status());
+                System.out.println(player.getHp());
                 System.out.println("attack / parry / dodge / heal");
                 String cmd = in.nextLine().trim().toLowerCase();
 
