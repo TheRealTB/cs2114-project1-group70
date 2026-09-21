@@ -27,7 +27,7 @@ public class EncounterRoom extends Room {
     }
 
     public static EncounterRoom generate(int depth) {
-        boolean boss = depth > 0 && depth % 5 == 0;
+        boolean boss = depth > 0 && depth % 10 == 0;
         EncounterRoom room = new EncounterRoom(depth, boss);
         room.setDepth(depth);
         return room;
