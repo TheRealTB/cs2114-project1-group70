@@ -272,7 +272,7 @@ public class GameRunner {
      *
      * @param command the command to wait for
      */
-    private static void waitForCommand(String command) {
+    public static void waitForCommand(String command) {
         String typed = "";
         while (!typed.equals(command)) {
             System.out.println("Type \"" + command + "\":");
@@ -295,7 +295,7 @@ public class GameRunner {
      * @param cmd attack parry or dodge
      * @return the damage dealt
      */
-    private static int playerDamage(Player p, Enemy e, String cmd) {
+    public static int playerDamage(Player p, Enemy e, String cmd) {
         int dmg = (int)(p.getAtk() * e.getDef());
         if (cmd.equals("parry")) {
             dmg = (int)(p.getAtk() * e.getDef() / 2) + 2;
