@@ -12,6 +12,7 @@ import org.junit.Before;
  *
  *  @author Asher
  *  @version Sep 21, 2026
+  *  Written with assistance from Anthropic Sonnet 5
  */
 public class PlayerTest {
     private Player player;
